@@ -7,7 +7,12 @@ cc.Class({
         panelSocial:cc.Node,
         // betStateUI:cc.Node,
         gameStateUI: cc.Node,
+<<<<<<< HEAD
         jdzStateUI:cc.Node,
+=======
+        btnPlay:cc.Node,
+        btnDoNot:cc.Node,
+>>>>>>> origin/master
         resultTxt:cc.Label,
         // betCounter:cc.ProgressBar,
         btnStart:cc.Node,
@@ -40,6 +45,7 @@ cc.Class({
         // }
     },
     
+    
     showBetState: function () {
         // this.betStateUI.active = true;
         this.gameStateUI.active = false;
@@ -50,6 +56,7 @@ cc.Class({
         this.gameStateUI.active = true;
         this.btnStart.active = false;
     },
+<<<<<<< HEAD
      showJDZState: function () {
         // this.betStateUI.active = false;
         this.jdzStateUI.active = true;
@@ -59,6 +66,15 @@ cc.Class({
         // this.betStateUI.active = false;
         this.dzStateUI.active = true;
         this.btnStart.active = false;
+=======
+    
+    btnPlayDisabled:function(){
+        this.btnPlay.interactable= false;
+    },
+    
+    btnPlayInUse: function(){
+      this.btnPlay.interactable	= true;  
+>>>>>>> origin/master
     },
 
     showResultState: function () {

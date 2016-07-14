@@ -50,6 +50,12 @@ cc.Class({
           serializable: false,
             visible: false
         },
+        willPutCards:{
+            default:[],
+          serializable: false,
+            visible: false
+        },
+        cardType: cc.Node,
         labelCardInfo: cc.Label,
         spCardInfo: cc.Sprite,
         animFX: cc.Node,
@@ -62,10 +68,14 @@ cc.Class({
     init: function ( playerInfo, playerInfoPos, stakePos, turnDuration, switchSide ) {
         // actor
         this.actor = this.getComponent('Actor');
-
+        // this.resultText = this.getComponent('resultTxt');
+        // this.resultText.enabled=false;
+        // this.cardType = this.cardType.getComponent('CardType');
         // nodes
+        this.game=cc.find('Game');
+        this.game=this.game.getComponent('Game');
         this.isCounting = false;
-        this.counterTimer = 0;
+        this.counterTimer = 1;
         this.turnDuration = turnDuration;
 
         this.playerInfo.position = playerInfoPos;
@@ -107,7 +117,8 @@ cc.Class({
         this.animFX.init();
         this.animFX.show(false);
     },
-
+    
+    // 更新金币
     updateTotalStake: function (num) {
         this.labelTotalStake.string = '$' + num;
     },
@@ -138,15 +149,21 @@ cc.Class({
     onDeal: function (card, show) {
         this.cardsArray.push(card);
         // cc.log('card.suit:'+card.suit);
+<<<<<<< HEAD
         //this.cardsArray.sort(this.compare('point'));
+=======
+        
+>>>>>>> origin/master
     },
     
     onDeal1: function(card,show){
         this.player1CardsArray.push(card);
+        this.player1CardsArray.sort(this.compare('point'));
     },
     
     onDeal2: function(card,show){
         this.player2CardsArray.push(card);
+        this.player2CardsArray.sort(this.compare('point'));
     },
     onDeal3: function(card,show){
         this.player3CardsArray.push(card);
@@ -206,12 +223,20 @@ cc.Class({
     showCards1: function(){
         for(var i=0;i<this.player1CardsArray.length;i++){
             var newCard = cc.instantiate(this.cardPrefab).getComponent('Card');
+            // var button = cc.instantiate(this.cardPrefab).getComponent('ButtonPut');
+            // button.upStationX=0;
             this.anchorCards.addChild(newCard.node);
             newCard.init(this.player1CardsArray[i]);
             newCard.reveal(false);
+<<<<<<< HEAD
             var startPos = cc.p(0, 0);
             var index = this.actor.holeCard.length;
             cc.log('player1牌的多少'+index);
+=======
+            var startPos = cc.p(0,0);
+            var index = this.player1CardsArray.length;
+            // cc.log('player1牌的多少'+index);
+>>>>>>> origin/master
             this.labelCardInfo.string = index;
             var endPos = cc.p(3 * i,0);
             newCard.node.setPosition(startPos);
@@ -221,15 +246,18 @@ cc.Class({
             var moveAction = cc.moveTo(0.5, endPos);
             var callback = cc.callFunc(this._onDealEnd, this);
             newCard.node.runAction(cc.sequence(moveAction, callback));
-            
         }
     },
     showCards2: function(){
+<<<<<<< HEAD
         
+=======
+        //   cc.log('player2牌的多少'+this.player2CardsArray.length);
+>>>>>>> origin/master
         for(var i=0;i<this.player2CardsArray.length;i++){
             var newCard = cc.instantiate(this.cardPrefab).getComponent('Card');
             this.anchorCards.addChild(newCard.node);
-            newCard.init(this.player2CardsArray[i]);
+            newCard.init(this.player2CardsArray[i],i);
             newCard.reveal(false);
             var startPos = cc.p(0, 0);
             var index = this.actor.holeCard.length;
@@ -244,7 +272,6 @@ cc.Class({
             var moveAction = cc.moveTo(0.5, endPos);
             var callback = cc.callFunc(this._onDealEnd, this);
             newCard.node.runAction(cc.sequence(moveAction, callback));
-            
         }
     },
     
@@ -367,7 +394,8 @@ cc.Class({
     
     addPutCard: function(card){
         this.putCardsArray.push(card);
-        cc.log('添加的打出的牌'+'point:'+card.point.string+'    tag:'+card.tag.string);
+        cc.log('添加的打出的牌'+'point:'+card.point.string+'    tag:'+card.tag.string+'value'+card.val.string);
+        this.putCardsArray.sort(this.compare('val'));
     },
     
     release: function(card){
@@ -379,6 +407,7 @@ cc.Class({
     },
     
     putCards:function(){
+<<<<<<< HEAD
         this.newCardsArray = [];
         this.newcardsArray = this.cardsArray.slice();
         for(var i=0;i<this.putCardsArray.length;i++){
@@ -395,96 +424,160 @@ cc.Class({
                     cc.log('删除一张牌tag:'+card.tag.string+'point:'+card.point.string);
                     this.cardsArray.splice(j,1);
                     this.cardsArray.sort(this.compare('point'));
-                }
-            }
+=======
+        var cardKind = 2;
+        var val = 5;
+        var go=false;
+        var type = this.typeJudge(this.putCardsArray);
+        if(this.typeJudge(this.putCardsArray)!=null){
+            var result=this.typeJudge(this.putCardsArray);
+            cc.log('牌的类型:'+result.cardKind);
+            cc.log('牌的值'+result.val);
+            cc.log('牌的长度'+result.size);
+            
+            // if(result.cardKind === cardKind && result.val> val ){
+            //     go = true;
+            // }else if(cardKind === 13 && result.cardKind === 13 && result.val > val ){
+            //     go = true;
+            // }else if(result.cardKind === 14){
+            //     go = true;
+            // }else if(cardKind < 13 && result.cardKind == 13){
+            //     go = true;
+            // }
+            
+            go=true;
+            
         }
         
-         this.anchorCards.removeAllChildren();
-         this._resetChips();
-         this.player0ShowPutCard();
-         this.showCards();
-         var game=cc.find('Game');
-            game = game.getComponent('Game');
-            game.btnPlay2(this.putCardsArray);
-        this.putCardsArray = [];
-         
-    },
-    
-    putCards2:function(card){
-        // for(var i=0;i<arr.length;i++){
-            var newCard = cc.instantiate(this.cardPrefab).getComponent('Card');
-        //     // this.newCardsArray.push(card);
-            newCard = card;
-            // cc.log('牌的point'+newCard.point.string+'tag'+newCard.tag.string);
-            for(var j=0;j<this.player2CardsArray.length;j++){
-                var card = cc.instantiate(this.cardPrefab).getComponent('Card');
-                card.init(this.player2CardsArray[j],j);
-                if(newCard.point.string === card.point.string && newCard.suitNum.string===card.suitNum.string){
-                    this.player0ShowPutCard();
-                    cc.log('删除掉的另一张牌tag:'+newCard.tag.string+'point'+newCard.point.string);
-                    cc.log('删除一张牌tag:'+card.tag.string+'point:'+card.point.string);
-                    this.player2CardsArray.splice(j,1);
-                    cc.log('player2CardsArray.length'+this.player2CardsArray.length);
-                    // this.cardsArray.sort(this.compare('point'));
+        if(go){
+             this.game.notShowText();
+            this.newCardsArray = [];
+            this.newcardsArray = this.cardsArray.slice();
+            for(var i=0;i<this.putCardsArray.length;i++){
+                var newCard = cc.instantiate(this.cardPrefab).getComponent('Card');
+                // this.newCardsArray.push(card);
+                newCard = this.putCardsArray[i];
+                // cc.log('牌的point'+newCard.point.string+'tag'+newCard.tag.string);
+                for(var j=0;j<this.cardsArray.length;j++){
+                    var card = cc.instantiate(this.cardPrefab).getComponent('Card');
+                    card.init(this.cardsArray[j],j);
+                    if(newCard.point.string === card.point.string && newCard.suitNum.string===card.suitNum.string){
+                        this.player0ShowPutCard();
+                        // cc.log('删除掉的另一张牌tag:'+newCard.tag.string+'point'+newCard.point.string);
+                        // cc.log('删除一张牌tag:'+card.tag.string+'point:'+card.point.string);
+                        this.cardsArray.splice(j,1);
+                        this.cardsArray.sort(this.compare('point'));
+                    }
+>>>>>>> origin/master
                 }
             }
-        // }
         
+            this.anchorCards.removeAllChildren();
+            this._resetChips();
+            this.player0ShowPutCard();
+            this.show();
+            this.willPutCards = this.putCardsArray.slice();
+            this.putCardsArray = [];
+            this.game.btnPlay2(result);
+            }
+            else{
+                var game=cc.find('Game');
+            game = game.getComponent('Game');
+            this.game.showText('出的牌不符合类型');
+            }
+            
+            if(this.cardsArray.length===0){
+                this.game.showText('赢了');
+                this.game.showStart();
+            }
         
     },
     
-    player2ShowPutCard: function(arr){
-        cc.log('player1的数组的长度'+this.player2CardsArray.length); 
-        for(var j=0;j<arr.length;j++){
-            var card = cc.instantiate(this.cardPrefab).getComponent('Card');
-                // card.init(arr[j],j);
-                card=arr[j];
-            // cc.log('牌的point'+newCard.point.string+'tag'+newCard.tag.string+'suit'+newCard.suitNum.string);
-            // for(var j=0;j<arr.length;j++){
-            for(var i=0;i<this.player2CardsArray.length;i++){
-                var newCard = cc.instantiate(this.cardPrefab).getComponent('Card');
-                newCard.init(this.player2CardsArray[i],i);
-                
-                // cc.log('检测到的牌:'+card.point.string);
-                if(newCard.point.string>card.point.string){
-                    this.putCards2(newCard);
-                    // cc.log('手机超人打出的牌'+newCard.point.string);
-                    // var newCard = cc.instantiate(this.cardPrefab).getComponent('Card');
-                    this.anchorCards.addChild(newCard.node);
-                    // newCard.init(this.player2CardsArray[i]);
-                    newCard.reveal(true);
+    show: function(){
+        this.labelCardInfo.string = 0;
+        this.cardsArray.sort(this.compare('point'));
+        for(var i=0;i<this.cardsArray.length;i++){
+            var newCard = cc.instantiate(this.cardPrefab).getComponent('Card');
+            this.anchorCards.addChild(newCard.node);
+            newCard.init(this.cardsArray[i],i);
+            // newCard = this.cardsArray[i];
+            // cc.log('card.tag'+newCard.tag.string+'card.ponit'+newCard.point.string);
+            newCard.reveal(true);
+            // this.newCardsArray.push(newCard);
+            var startPos = cc.p(0, 0);
+            var index = this.cardsArray.length;
+            //  this.cardInfo.active=true;
+            this.labelCardInfo.string = index;
+            var endPos = cc.p(30 * i, 0);
+            newCard.node.setPosition(endPos);
+            var endPosX = endPos.x;
+            this._updatePointPos(endPosX);
+        }
+        
+    },
+    
+    putCards2:function(result){
+        this.willPutCards = this.player2CardsArray.slice();
+        cc.log('牌的类型:'+result.cardKind);
+        cc.log('牌的值'+result.val);
+        cc.log('牌的长度'+result.size);
+        // cc.log('arr'+arr.length);
+        // for(var i=0;i<arr.length;i++){
+        //     var newCard = cc.instantiate(this.cardPrefab).getComponent('Card');
+        //     newCard = arr[i];
+        //     cc.log('point'+newCard.point.string);
+        //     for(var j=0;j<this.player2CardsArray.length;j++){
+        //         var card = cc.instantiate(this.cardPrefab).getComponent('Card');
+        //         card.init(this.player2CardsArray[j],j);
+        //         if(card.point.string>newCard.point.string){
+        //             this.newCardsArray.push(card);
+        //             this.player2CardsArray.splice(j,1);
+        //              this.player2CardsArray.sort(this.compare('point'));
+        //              break;
+        //         }
+        //     }
+        // }
+        // this.anchorCards.removeAllChildren();
+        //  this._resetChips();
+        //  this.player2ShowPutCard();
+        //  this.showCards2();
+        // this.newCardsArray = [];
+    },
+    
+    player2ShowPutCard: function(){
+        cc.log('机器人要出的牌'+this.newCardsArray.length);
+        for(var i=0;i<this.newCardsArray.length;i++){
+            var newCard = cc.instantiate(this.cardPrefab).getComponent('Card');
+            newCard = this.newCardsArray[i];
+            // cc.log('牌的point'+newCard.point.string+'tag'+newCard.tag.string+'suit'+newCard.suitNum.string); 
+            for(var j=0;j<this.willPutCards.length;j++){
+                var card = cc.instantiate(this.cardPrefab).getComponent('Card');
+                card.init(this.willPutCards[j]);
+                // card = this.willPutCards[j];
+                cc.log('willPutCards.length'+this.willPutCards.length);
+                if(newCard.point.string === card.point.string && newCard.suitNum.string===card.suitNum.string){
+                    var newCard2 = cc.instantiate(this.cardPrefab).getComponent('Card');
+                    this.anchorCards.addChild(newCard2.node);
+                    newCard2.init(this.willPutCards[j],j);
+                    cc.log('asdf');
+                    newCard2.reveal(true);
+                    var startPos = cc.p(-150-(30 * this.newCardsArray.length-i), 0);
+                    var index = this.willPutCards.length;
                     var endPos = cc.p(-150,0);
-                    var index = this.player2CardsArray.length;
-                    // cc.log('player2牌的多少'+index);
-            
-                    // this.labelCardInfo.string = index;
-                    var startPos = cc.p(-10*j-150,0);
-                    newCard.node.setPosition(startPos);
+                    newCard2.node.setPosition(startPos);
                     var endPosX = endPos.x;
+                    
                     this._updatePointPos(endPosX);
-            
                     var moveAction = cc.moveTo(0.5, endPos);
                     var callback = cc.callFunc(this._onDealEnd, this);
-                    newCard.node.runAction(cc.sequence(moveAction, callback));
-                    
-                    break;
+                    newCard2.node.runAction(cc.sequence(moveAction, callback));
                 }
             }
         }
-        this.anchorCards.removeAllChildren();
-         this._resetChips();
-         this.showCards2();
-        //  this.player2ShowPutCard(arr);
-         
-        //  var game=cc.find('Game');
-        //     game = game.getComponent('Game');
-        //     game.btnPlay2(this.putCardsArray);
-        
-        this.putCardsArray = [];
     },
     
     player0ShowPutCard:function(){
-        cc.log('长度'+this.putCardsArray.length);
+        // cc.log('长度'+this.putCardsArray.length);
         for(var i=0;i<this.putCardsArray.length;i++){
             var newCard = cc.instantiate(this.cardPrefab).getComponent('Card');
             newCard = this.putCardsArray[i];
@@ -499,13 +592,10 @@ cc.Class({
                     newCard2.reveal(true);
                     var startPos = cc.p(100, 150);
                     var index = this.newcardsArray.length;
-                    var endPos = cc.p(100+(30 * i),150);
-                    newCard2.node.setPosition(startPos);
+                    var endPos = cc.p(100+(30 *i),150);
+                    newCard2.node.setPosition(endPos);
                     var endPosX = endPos.x;
                     this._updatePointPos(endPosX);
-                    var moveAction = cc.moveTo(0.5, endPos);
-                    var callback = cc.callFunc(this._onDealEnd, this);
-                    newCard2.node.runAction(cc.sequence(moveAction, callback));
                 }
             }
         }
@@ -535,5 +625,285 @@ cc.Class({
                 // this.updatePoint();
                 break;
         }
+    },
+    
+    typeJudge : function(cards){
+        var self = this,
+        len = cards.length;
+    switch (len) {
+        case 1:
+            return {'cardKind': 1, 'val': cards[0].val.string, 'size': len};
+        case 2:
+            if(self.isPairs(cards))
+                return {'cardKind': 2, 'val': cards[0].val.string, 'size': len};
+            else if (self.isKingBomb(cards))
+                return {'cardKind': 14, 'val': cards[0].val.string, 'size': len};
+            else
+                return null;
+        case 3:
+            if(self.isThree(cards))
+                return {'cardKind': 3, 'val': cards[0].val.string, 'size': len};
+            else
+                return null;
+        case 4:
+            if(self.isThreeWithOne(cards)){
+                return {'cardKind': 4, 'val': self.getMaxVal(cards, 3), 'size': len};
+            } else if (self.isBomb(cards)) {
+                return {'cardKind': 13, 'val': cards[0].val.string, 'size': len};
+            }
+            return null;
+        default:
+            if(self.isProgression(cards))
+                return {'cardKind': 6, 'val': cards[0].val.string, 'size': len};
+            else if(self.isProgressionPairs(cards))
+                return {'cardKind': 7, 'val': cards[0].val.string, 'size': len};
+            else if(self.isThreeWithPairs(cards))
+                return {'cardKind': 5, 'val': self.getMaxVal(cards, 3), 'size': len};
+            else if(self.isPlane(cards))
+                return {'cardKind': 8, 'val': self.getMaxVal(cards, 3), 'size': len};
+            else if(self.isPlaneWithOne(cards))
+                return {'cardKind': 9, 'val': self.getMaxVal(cards, 3), 'size': len};
+            else if(self.isPlaneWithPairs(cards))
+                return {'cardKind': 10, 'val': self.getMaxVal(cards, 3), 'size': len};
+            else if(self.isFourWithTwo(cards))
+                return {'cardKind': 11, 'val': self.getMaxVal(cards, 4), 'size': len};
+            else if(self.isFourWithPairs(cards))
+                return {'cardKind': 12, 'val': self.getMaxVal(cards, 4), 'size': len};
+            else
+                return null;
+
+    }
+
+    },
+    
+    // 是否是对子
+    isPairs: function(cards){
+        return cards.length == 2 && cards[0].val.string === cards[1].val.string;
+    },
+    
+    // 是否是三根
+    isThree:function(cards){
+        cc.log('cards的值'+cards[0].val.string+cards[1].val.string+cards[2].val.string);
+        return cards.length === 3 && cards[0].val.string === cards[1].val.string && cards[1].val.string === cards[2].val.string;
+    },
+    //是否是三带一
+    isThreeWithOne : function(cards) {
+        if(cards.length != 4) return false;
+        var c = this.valCount(cards);
+        // cc.log();
+        return c.length === 2 && (c[0].count === 3 || c[1].count === 3);
+    },
+    //是否是三带一对
+    isThreeWithPairs :function(cards) {
+        if(cards.length != 5) return false;
+        var c = this.valCount(cards);
+        // cc.log('123');
+        // cc.log('c[0]:'+c[0].count+'c[1]:'+c[1].count);
+        return c.length === 2 && (c[0].count === 3 || c[1].count === 3);
+    },
+    
+    //是否是顺子
+    isProgression : function(cards) {
+        cards.sort(this.compare('val'))
+        // cc.log('长度的值'+cards.length);
+        if(cards.length < 5 || cards[0].val.string === 15) return false;
+        
+        for (var i = 0; i < cards.length-1; i++) {
+            var prev = cards[i].val.string;
+            var next = cards[i+1].val.string;
+            if(prev === 17 || prev === 16 || prev===15||next===17||next===16||next===15){
+                return false;
+            }else{
+                if(prev - next != -1){
+                    if(prev - next != 1)
+                        return false;
+                }
+            }
+        }
+        return true;
+
+    },
+    //是否是连对
+    isProgressionPairs : function(cards) {
+    if(cards.length < 6 || cards.length % 2 !== 0 || cards[0].val.string === 15) return false;
+    for (var i = 0; i < cards.length; i += 2) {
+        if(i != (cards.length - 2) && (cards[i].val.string != cards[i + 1].val.string || (cards[i].val.string - 1) != cards[i + 2].val.string)){
+            return false;
+        }
+    }
+    return true;
+    },
+    //是否是飞机
+    isPlane : function(cards) {
+    if(cards.length < 6 || cards.length % 3 !== 0 || cards[0].val.string === 15) return false;
+    for (var i = 0; i < cards.length; i += 3) {
+        if(i != (cards.length - 3) && (cards[i].val.string != cards[i + 1].val.string || cards[i].val.string != cards[i + 2].val.string || (cards[i].val.string - 1) != cards[i + 3].val.string)){
+            return false;
+        }
+    }
+    return true;
+    },
+    
+    //是否是飞机带单
+    isPlaneWithOne: function(cards) {
+    if(cards.length < 8 || cards.length % 4 !== 0) return false;
+    var c = this.valCount(cards),
+        threeList = [],
+        threeCount = cards.length / 4;
+    for (var i = 0; i < c.length; i++) {
+        if(c[i].count == 3){
+            threeList.push(c[i]);
+        }
+    }
+    if(threeList.length != threeCount || threeList[0].val.string === 15){//检测三根数量和不能为2
+        return false;
+    }
+    for (i = 0; i < threeList.length; i++) {//检测三根是否连续
+        if(i != threeList.length - 1 && threeList[i].val.string - 1 != threeList[i + 1].val.string){
+            return false;
+        }
+    }
+    return true;
+    },
+    
+    //是否是飞机带对
+    isPlaneWithPairs : function(cards) {
+    if(cards.length < 10 || cards.length % 5 !== 0) return false;
+    var c = this.valCount(cards),
+        threeList = [],
+        pairsList = [],
+        groupCount = cards.length / 5;
+    for (var i = 0; i < c.length; i++) {
+        if(c[i].count == 3){
+            threeList.push(c[i]);
+        }
+        else if(c[i].count == 2){
+            pairsList.push(c[i]);
+        } else {
+            return false;
+        }
+    }
+    if(threeList.length != groupCount || pairsList.length != groupCount || threeList[0].val.string === 15){//检测三根数量和对子数量和不能为2
+        return false;
+    }
+    for (i = 0; i < threeList.length; i++) {//检测三根是否连续
+        if(i != threeList.length - 1 && threeList[i].val.string - 1 != threeList[i + 1].val.string){
+            return false;
+        }
+    }
+    return true;
+    },
+    
+    //是否是四带二
+    isFourWithTwo : function(cards) {
+    var c = this.valCount(cards);
+    if(cards.length !== 6 || c.length > 3) return false;
+    for (var i = 0; i < c.length; i++) {
+        if(c[i].count === 4)
+            return true;
+    }
+    return false;
+    },
+    
+    //是否是四带两个对
+    isFourWithPairs : function(cards) {
+    if(cards.length != 8) return false;
+    var c = this.valCount(cards);
+    if(c.length != 3) return false;
+    for (var i = 0; i < c.length; i++) {
+        if(c[i].count != 4 && c[i].count != 2)
+            return false;
+    }
+    return true;
+    },
+    
+    //是否是炸弹
+    isBomb : function(cards) {
+    return cards.length === 4 && cards[0].val.string === cards[1].val.string && cards[0].val.string === cards[2].val.string && cards[0].val.string === cards[3].val.string;
+    },
+    
+    //是否是王炸
+    isKingBomb : function(cards) {
+        if(cards.length === 2){
+            if((cards[0].val.string === 16 && cards[1].val.string === 17)||(cards[0].val.string === 17 && cards[1].val.string === 16)){
+                return true;
+            }
+        }
+        return false;
+    // return cards.length === 2 && ((cards[0].val.string === 16 && cards[1].val.string === 17)||(cards[0].val.string === 17 && cards[1].val.string === 16)));
+    },
+    
+    /**
+ * 获取min到max之间的随机整数，min和max值都取得到
+ * @param  {number} min - 最小值
+ * @param  {number} max - 最大值
+ * @return {number}
+ */
+    random : function(min, max) {
+	min = min == null ? 0 : min;
+	max = max == null ? 1 : max;
+	var delta = (max - min) + 1;
+	return Math.floor(Math.random() * delta + min);
+    },
+    
+    /**
+ * 牌统计，统计各个牌有多少张，比如2张A，一张8
+ * @param  {list} cards - 要统计的牌
+ * @return {object array} val：值，count：数量
+ */
+    valCount : function(cards){
+        cards.sort(this.compare('val'));
+        var result = [];
+        var index=0;
+        for(var i=0;i<cards.length-1;i++){
+            if(cards[i].val.string != cards[i+1].val.string){
+                result.push({'val':cards[i].val.string, 'count':i+1-index});
+                index=i;
+            }
+        }
+          if(index+1===cards.length||index+1<cards.length){
+                    result.push({'val':cards[index+1].val.string,'count':cards.length-index-1});
+                }
+        
+        return result;
+    },
+    
+    
+    /**
+ * 获取指定张数的最大牌值
+ * @param  {list} cards - 牌
+ * @param  {list} cards - 张数
+ * @return 值
+ */
+    getMaxVal : function(cards, n){
+    var c = this.valCount(cards);
+    var max = 0;
+
+    for (var i = 0; i < c.length; i++) {
+        // cc.log('c[i].count'+c[i].count);
+        if(c[i].count === n && c[i].val > max){
+            max = c[i].val;
+        }
+    }
+    return max;
+    },
+    
+    /**
+ * 卡牌排序
+ * @method cardSort
+ * @param  {Object} a [description]
+ * @param  {Object} b [description]
+ * @return 1 : a < b ,-1 a : > b   [description]
+ */
+    cardSort : function (a, b){
+    var va = parseInt(a.val);
+    var vb = parseInt(b.val);
+    if(va === vb){
+        return a.type > b.type ? 1 : -1;
+    } else if(va > vb){
+        return -1;
+    } else {
+        return 1;
+    }
     },
 });

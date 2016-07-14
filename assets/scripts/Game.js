@@ -115,10 +115,10 @@ var Game =  cc.Class({
     },
     
     // 机器人 手机超人 出牌
-    btnPlay2: function(arr){
+    btnPlay2: function(result){
         // this.player2.putCard();
-        cc.log('手机超人要出牌了'+arr.length);
-        this.player2.putCard2(arr);
+        // cc.log('手机超人要出牌了'+arr.length);
+        this.player2.putCard2(result);
     },
 
     // use this for initialization
@@ -131,15 +131,15 @@ var Game =  cc.Class({
         
         this.dealer = this.dealer.getComponent('Dealer');
         this.dealer.init();
-        
+    
         this.player = null;
         this.player1 = null;
         this.player2 = null;
         this.player3 = null;
         this.createPlayers();
         
-        this.dealer = this.dealer.getComponent('Dealer');
-        this.dealer.init();
+        // this.dealer = this.dealer.getComponent('Dealer');
+        // this.dealer.init();
         
         // shortcut to ui element
         this.info = this.inGameUI.resultTxt;
@@ -156,30 +156,6 @@ var Game =  cc.Class({
         this.audioMng.playMusic();
     },
     
-    // 玩家要牌
-    hit: function () {
-        this.player.addCard(this.decks.draw());
-        // if (this.player.state === ActorPlayingState.Bust) {
-        //     // if every player end
-        //     this.fsm.onPlayerActed();
-        // }
-
-        this.audioMng.playCard();
-
-        //if (this.dealer.state === ActorPlayingState.Normal) {
-        //    if (this.dealer.wantHit()) {
-        //        this.dealer.addCard(this.decks.draw());
-        //    }
-        //    else {
-        //        this.dealer.stand();
-        //    }
-        //}
-        //
-        //if (this.dealer.state === ActorPlayingState.Bust) {
-        //    this.state = GamingState.End;
-        //}
-        this.audioMng.playButton();
-    },
     
     createPlayers: function(){
       for(var i = 0;i < 4; ++i){
@@ -230,6 +206,33 @@ var Game =  cc.Class({
     
     quitToMenu: function(){
       cc.director.loadScene('menu');
+    },
+    
+    // text显示
+    showText: function(string){
+        this.info.enabled=true;
+        this.info.string=string;
+        this.inGameUI.btnPlayDisabled();
+    },
+    
+    notShowText: function(){
+      this.info.enabled=false; 
+    },
+    
+    showStart:function(){
+            this.decks.reset();
+           this.player.reset();
+           this.dealer.reset();
+           this.fsm.init(this);
+           this.createPlayers();
+           this.dealer = this.dealer.getComponent('Dealer');
+            this.dealer.init();
+           this.decks = new Decks(this.numberOfDecks);
+        //   this.info.string = '请下注';
+           this.inGameUI.showBetState();
+           this.inGameUI.startCountdown();
+            this.inGameUI.btnStart.active=true;
+           this.audioMng.resumeMusic();
     },
 
     // called every frame, uncomment this function to activate update callback
