@@ -46,8 +46,13 @@ var Game =  cc.Class({
         this.inGameUI.btnStart.active=false;
         this.fsm.toBet();
         this.fsm.toDeal();
-        this.onPlayersTurnState(true);
+        this.onPlayersTurnJDZState(true);
         this.audioMng.playButton();
+    },
+    dzGo:function(){
+      this.inGameUI.jdzStateUI.active = false;
+      this.onPlayersCardsGet(true);
+    //   this.player.showCard();
     },
     
     // FSM CALLBACKS 回调
@@ -56,7 +61,9 @@ var Game =  cc.Class({
         this.inGameUI.resetCountdown();
         // 下注的多少
         // this.player.renderer.showStakeChips(this.player.stakeNum);
-        
+        for(var j=0; j<3; ++j){
+            this.player3.addHoleCard3(this.decks.draw());
+        }
         for (var i=0; i<17; ++i){
             this.player.addCard(this.decks.draw());
             this.player1.addHoleCard(this.decks.draw());
@@ -65,13 +72,35 @@ var Game =  cc.Class({
         this.player.showCard();
         this.player1.showCards1();
         this.player2.showCards2();
-
+        this.player3.showCards3();
+    },
+     //  叫地主
+    onPlayersTurnJDZState: function (enter) {
+        if (enter) {
+            this.inGameUI.showJDZState();
+        }
     },
     
+      //  抢地主
+    onPlayersTurnDZState: function (enter) {
+        if (enter) {
+            this.inGameUI.showDZState();
+        }
+    },
     // 显示出牌或不出牌按钮
     onPlayersTurnState: function (enter) {
         if (enter) {
             this.inGameUI.showGameState();
+        }
+    },
+    // 抢地主
+    onPlayersDZchange: function () {
+        
+
+    },
+    onPlayersCardsGet:function(enter){
+         if (enter) {
+            this.player3.revealHoldCard();
         }
     },
 
@@ -105,6 +134,8 @@ var Game =  cc.Class({
         
         this.player = null;
         this.player1 = null;
+        this.player2 = null;
+        this.player3 = null;
         this.createPlayers();
         
         this.dealer = this.dealer.getComponent('Dealer');
@@ -151,10 +182,10 @@ var Game =  cc.Class({
     },
     
     createPlayers: function(){
-      for(var i = 0;i < 3; ++i){
+      for(var i = 0;i < 4; ++i){
            var playerNode = cc.instantiate(this.playerPrefab);
             var anchor = this.playerAnchors[i];
-            var switchSide = (i > 2);
+            var switchSide = (i > 3);
             anchor.addChild(playerNode);
             playerNode.position = cc.p(0, 0);
 
@@ -174,6 +205,12 @@ var Game =  cc.Class({
           if (i === 2){
               this.player2 = playerNode.getComponent('Player');
               this.player2.init();
+          }
+          if (i === 3){
+              this.player3 = playerNode.getComponent('Player');
+              this.player3.init();
+              actorRenderer.playerInfo.active = false;
+              actorRenderer.stakeOnTable.active = false;
           }
       }  
     },

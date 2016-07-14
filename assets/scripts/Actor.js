@@ -96,7 +96,9 @@ cc.Class({
     showCards2: function(){
         this.renderer.showCards2();
     },
-    
+    showCards3: function(){
+        this.renderer.showCards3();
+    },
     addHoleCard: function (card) {
         this.holeCard.push(card);
         this.renderer.onDeal1(card, false);
@@ -105,6 +107,10 @@ cc.Class({
     addHoleCard2: function(card){
         this.holeCard.push(card);
         this.renderer.onDeal2(card,false);
+    },
+    addHoleCard3: function(card){
+        this.holeCard.push(card);
+        this.renderer.onDeal3(card,false);
     },
 
     stand: function () {

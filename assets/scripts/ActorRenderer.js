@@ -30,7 +30,7 @@ cc.Class({
         },
         newCardsArray:{
             default:[],
-            serializable: false,
+            //serializable: false,
             visible: false
         },
         player1CardsArray:{
@@ -38,6 +38,10 @@ cc.Class({
           type:cc.SpriteFrame
         },
         player2CardsArray:{
+          default: [],
+          type:cc.SpriteFrame
+        },
+        player3CardsArray:{
           default: [],
           type:cc.SpriteFrame
         },
@@ -134,7 +138,7 @@ cc.Class({
     onDeal: function (card, show) {
         this.cardsArray.push(card);
         // cc.log('card.suit:'+card.suit);
-        this.cardsArray.sort(this.compare('point'));
+        //this.cardsArray.sort(this.compare('point'));
     },
     
     onDeal1: function(card,show){
@@ -143,6 +147,9 @@ cc.Class({
     
     onDeal2: function(card,show){
         this.player2CardsArray.push(card);
+    },
+    onDeal3: function(card,show){
+        this.player3CardsArray.push(card);
     },
     
     upDataInfoPosition: function(){
@@ -170,6 +177,7 @@ cc.Class({
     
     showCards: function(){
         this.labelCardInfo.string = 0;
+        this.cardsArray.sort(this.compare('point'));
         for(var i=0;i<this.cardsArray.length;i++){
             var newCard = cc.instantiate(this.cardPrefab).getComponent('Card');
             this.anchorCards.addChild(newCard.node);
@@ -180,7 +188,7 @@ cc.Class({
             // this.newCardsArray.push(newCard);
             var startPos = cc.p(0, 0);
             var index = this.cardsArray.length;
-            //  this.cardInfo.active=true;
+            // this.cardInfo.active=true;
             this.labelCardInfo.string = index;
             var endPos = cc.p(30 * i, 0);
             newCard.node.setPosition(startPos);
@@ -201,11 +209,34 @@ cc.Class({
             this.anchorCards.addChild(newCard.node);
             newCard.init(this.player1CardsArray[i]);
             newCard.reveal(false);
-            var startPos = cc.p(0,0);
-            var index = this.player1CardsArray.length;
+            var startPos = cc.p(0, 0);
+            var index = this.actor.holeCard.length;
             cc.log('player1牌的多少'+index);
             this.labelCardInfo.string = index;
-            var endPos = cc.p(0*i,0);
+            var endPos = cc.p(3 * i,0);
+            newCard.node.setPosition(startPos);
+            var endPosX = endPos.x;
+            this._updatePointPos(endPosX);
+            
+            var moveAction = cc.moveTo(0.5, endPos);
+            var callback = cc.callFunc(this._onDealEnd, this);
+            newCard.node.runAction(cc.sequence(moveAction, callback));
+            
+        }
+    },
+    showCards2: function(){
+        
+        for(var i=0;i<this.player2CardsArray.length;i++){
+            var newCard = cc.instantiate(this.cardPrefab).getComponent('Card');
+            this.anchorCards.addChild(newCard.node);
+            newCard.init(this.player2CardsArray[i]);
+            newCard.reveal(false);
+            var startPos = cc.p(0, 0);
+            var index = this.actor.holeCard.length;
+            cc.log('player2牌的多少'+index);
+            
+            this.labelCardInfo.string = index;
+            var endPos = cc.p(3 * i,0);
             newCard.node.setPosition(startPos);
             var endPosX = endPos.x;
             this._updatePointPos(endPosX);
@@ -217,27 +248,25 @@ cc.Class({
         }
     },
     
-    showCards2: function(){
-          cc.log('player2牌的多少'+this.player2CardsArray.length);
-        for(var i=0;i<this.player2CardsArray.length;i++){
+     showCards3: function () {
+        for (var i = 0; i < this.player3CardsArray.length; i++) {
             var newCard = cc.instantiate(this.cardPrefab).getComponent('Card');
             this.anchorCards.addChild(newCard.node);
-            newCard.init(this.player2CardsArray[i]);
+            newCard.init(this.player3CardsArray[i]);
             newCard.reveal(false);
-            var startPos = cc.p(0,0);
-            var index = this.player2CardsArray.length;
-            // cc.log('player2牌的多少'+index);
-            
+            var startPos = cc.p(0, 0);
+            var index = this.actor.holeCard.length;
+            cc.log('3张底牌' + index);
             this.labelCardInfo.string = index;
-            var endPos = cc.p(0*i,0);
+            var endPos = cc.p(100 * i, 0);
             newCard.node.setPosition(startPos);
             var endPosX = endPos.x;
             this._updatePointPos(endPosX);
-            
+
             var moveAction = cc.moveTo(0.5, endPos);
-            var callback = cc.callFunc(this._onDealEnd, this);
-            newCard.node.runAction(cc.sequence(moveAction, callback));
-            
+           // var callback = cc.callFunc(this._onDealEnd, this);
+            newCard.node.runAction(moveAction);
+
         }
     },
     
@@ -263,16 +292,40 @@ cc.Class({
     },
 
     onRevealHoldCard: function () {
-        var card = cc.find('cardPrefab', this.anchorCards).getComponent('Card');
+        for (var i = 0; i < this.player3CardsArray.length; i++) {
+            var newCard = cc.instantiate(this.cardPrefab).getComponent('Card');
+            this.anchorCards.addChild(newCard.node);
+            newCard.init(this.player3CardsArray[i]);
+            newCard.reveal(true);
+            var startPos = cc.p(0, 0);
+            //var index = this.actor.holeCard.length;
+            //cc.log('3张底牌' + index);
+           // this.labelCardInfo.string = index;
+            var endPos = cc.p(100 * i, 0);
+            newCard.node.setPosition(endPos);
+            var endPosX = endPos.x;
+            this._updatePointPos(endPosX);
+           // cc.log("ss");
+           // var moveAction = cc.(0.5, endPos);
+           // var callback = cc.callFunc(this._onDealEnd, this);
+           // newCard.node.runAction(moveAction);
+        }  
+        cc.log("sss" + this.cardsArray.length);
+            this.showCards();
+          
+     /*  // for(var i = 0; i <this.player3CardsArray.length; ++i){
+        var card = cc.find('cardPrefab', this.anchorCards.lastChild).getComponent('Card');
+      
         card.reveal(true);
-        this.updateState();
+       // this.updateState();
+       // }*/
     },
 
     updatePoint: function () {
         this.cardInfo.active = true;
         // this.labelCardInfo.string = this.actor.cards.length;
 
-        switch (this.actor.hand) {
+       switch (this.actor.hand) {
             case Types.Hand.BlackJack:
                 this.animFX.show(true);
                 this.animFX.playFX('blackjack');
@@ -326,7 +379,7 @@ cc.Class({
     },
     
     putCards:function(){
-        // this.newCardsArray = [];
+        this.newCardsArray = [];
         this.newcardsArray = this.cardsArray.slice();
         for(var i=0;i<this.putCardsArray.length;i++){
             var newCard = cc.instantiate(this.cardPrefab).getComponent('Card');
